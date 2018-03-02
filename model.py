@@ -33,20 +33,20 @@ def buy(ticker_symbol, trade_volume):
         cursor.execute('UPDATE users SET balance = {new_balance};'.format(new_balance=new_balance))
         connection.commit()
 
-        cursor.execute('INSERT INTO transactions(unix_time, ticker_symbol, transaction_type, last_price, trade_volume) VALUES({0}, "{1}", {2}, {3}, {4});'.format(unix_time, ticker_symbol, transaction_type, last_price, trade_volume))
+        cursor.execute('INSERT INTO transactions(unix_time, ticker_symbol, transaction_type, last_price, trade_volume) VALUES({0}, "{1}", {2}, {3}, {4});'.format(unix_time, ticker_symbol, transaction_type, last_price, int(trade_volume)))
         connection.commit()
 
         cursor.execute('SELECT ticker_symbol FROM positions WHERE ticker_symbol = "{ticker_symbol}";'.format(ticker_symbol=ticker_symbol))
         position_exists = cursor.fetchone()
 
         if position_exists is None:
-            cursor.execute('INSERT INTO positions(ticker_symbol, number_of_shares, volume_weighted_adjusted_price) VALUES("{ticker_symbol}", {number_of_shares}, {volume_weighted_adjusted_price});'.format(ticker_symbol=ticker_symbol, number_of_shares=trade_volume, volume_weighted_adjusted_price = last_price))
+            cursor.execute('INSERT INTO positions(ticker_symbol, number_of_shares, volume_weighted_adjusted_price) VALUES("{ticker_symbol}", {number_of_shares}, {volume_weighted_adjusted_price});'.format(ticker_symbol=ticker_symbol, number_of_shares=int(trade_volume), volume_weighted_adjusted_price = last_price))
             connection.commit()
 
         else:
             cursor.execute('SELECT number_of_shares FROM positions WHERE ticker_symbol = "{ticker_symbol}";'.format(ticker_symbol=ticker_symbol))
             current_holdings = cursor.fetchall()[0][0]
-            new_holdings = current_holdings + trade_volume
+            new_holdings = int(current_holdings) + int(trade_volume)
 
             cursor.execute('UPDATE positions SET number_of_shares = {number_of_shares};'.format(number_of_shares=new_holdings))
             connection.commit()
@@ -54,7 +54,7 @@ def buy(ticker_symbol, trade_volume):
             cursor.execute('SELECT volume_weighted_adjusted_price FROM positions WHERE ticker_symbol = "{ticker_symbol}";'.format(ticker_symbol=ticker_symbol))
 
             old_vwap = cursor.fetchall()[0][0]
-            new_vwap = ((trade_volume * last_price)+(current_holdings * old_vwap)) / new_holdings 
+            new_vwap = ((int(trade_volume) * last_price)+(current_holdings * old_vwap)) / new_holdings 
 
             cursor.execute('UPDATE positions SET volume_weighted_adjusted_price = {volume_weighted_adjusted_price};'.format(volume_weighted_adjusted_price=new_vwap))
             connection.commit()
@@ -79,7 +79,7 @@ def sell(ticker_symbol, trade_volume):
     friction = 8.00 # Amount of money it costs to make a trade per trade
 
     transaction_cost = friction
-    new_balance = balance + (last_price * trade_volume) - transaction_cost
+    new_balance = balance + (last_price * int(trade_volume)) - transaction_cost
 
     unix_time = time.time()
     transaction_type = 0
@@ -90,17 +90,17 @@ def sell(ticker_symbol, trade_volume):
         cursor.execute('SELECT number_of_shares FROM positions WHERE ticker_symbol = "{ticker_symbol}";'.format(ticker_symbol=ticker_symbol))
         current_holdings = cursor.fetchall()[0][0]
 
-        new_holdings = current_holdings - trade_volume
+        new_holdings = current_holdings - int(trade_volume)
 
-        cursor.execute('INSERT INTO transactions(unix_time, ticker_symbol, transaction_type, last_price, trade_volume) VALUES({0}, "{1}", {2}, {3}, {4});'.format(unix_time, ticker_symbol, transaction_type, last_price, trade_volume))
+        cursor.execute('INSERT INTO transactions(unix_time, ticker_symbol, transaction_type, last_price, trade_volume) VALUES({0}, "{1}", {2}, {3}, {4});'.format(unix_time, ticker_symbol, transaction_type, last_price, int(trade_volume)))
         connection.commit()
 
         cursor.execute('SELECT ticker_symbol FROM positions WHERE ticker_symbol = "{ticker_symbol}";'.format(ticker_symbol=ticker_symbol))
         position_exists = cursor.fetchone()
 
-        if position_exists is None or trade_volume > current_holdings:
+        if position_exists is None or int(trade_volume) > current_holdings:
             return 'You don\'t have any shares to sell'
-            #cursor.execute('INSERT INTO positions(ticker_symbol, number_of_shares, volume_weighted_adjusted_price) VALUES("{ticker_symbol}", {number_of_shares}, {volume_weighted_adjusted_price});'.format(ticker_symbol=ticker_symbol, number_of_shares=trade_volume, volume_weighted_adjusted_price = last_price))
+            #cursor.execute('INSERT INTO positions(ticker_symbol, number_of_shares, volume_weighted_adjusted_price) VALUES("{ticker_symbol}", {number_of_shares}, {volume_weighted_adjusted_price});'.format(ticker_symbol=ticker_symbol, number_of_shares=int(trade_volume), volume_weighted_adjusted_price = last_price))
             #connection.commit()
 
         else:
@@ -115,7 +115,7 @@ def sell(ticker_symbol, trade_volume):
             if new_holdings == 0:
                 new_vwap = 0.0
             else:
-                new_vwap = ((trade_volume * last_price)+(current_holdings * old_vwap)) / new_holdings
+                new_vwap = ((int(trade_volume) * last_price)+(current_holdings * old_vwap)) / new_holdings
 
             cursor.execute('UPDATE positions SET volume_weighted_adjusted_price = {volume_weighted_adjusted_price};'.format(volume_weighted_adjusted_price=new_vwap))
             connection.commit()
