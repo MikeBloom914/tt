@@ -44,34 +44,32 @@ def buy(ticker_symbol, trade_volume):
             connection.commit()
 
         else:
-            print(trade_volume, last_price)
-            volume_weighted_adjusted_price = (trade_volume * last_price) / trade_volume
+            cursor.execute('SELECT number_of_shares FROM positions WHERE ticker_symbol = "{ticker_symbol}";'.format(ticker_symbol=ticker_symbol))
+            current_holdings = cursor.fetchall()[0][0]
+            new_holdings = current_holdings + trade_volume
 
-            cursor.execute('UPDATE positions SET volume_weighted_adjusted_price = {volume_weighted_adjusted_price};'.format(volume_weighted_adjusted_price=volume_weighted_adjusted_price))
+            cursor.execute('UPDATE positions SET number_of_shares = {number_of_shares};'.format(number_of_shares=new_holdings))
             connection.commit()
 
-            cursor.execute('SELECT last_price FROM transactions WHERE ticker_symbol = "{ticker_symbol}";'.format(ticker_symbol=ticker_symbol))
-            pricex  = cursor.fetchall()
-            print(pricex)
-            pricel  = [price[0] for price in pricex]
-            print(pricel)
-            cursor.execute('SELECT trade_volume FROM transactions WHERE ticker_symbol = "{ticker_symbol}";'.format(ticker_symbol=ticker_symbol))
-            volumex = cursor.fetchall()
-            volumel = [volume[0] for volume in volumex]
+            cursor.execute('SELECT volume_weighted_adjusted_price FROM positions WHERE ticker_symbol = "{ticker_symbol}";'.format(ticker_symbol=ticker_symbol))
+
+            old_vwap = cursor.fetchall()[0][0]
+            new_vwap = ((trade_volume * last_price)+(current_holdings * old_vwap)) / new_holdings 
+            print(old_vwap)
+            print(new_vwap)
+            cursor.execute('UPDATE positions SET volume_weighted_adjusted_price = {volume_weighted_adjusted_price};'.format(volume_weighted_adjusted_price=new_vwap))
+            connection.commit()
+
+            #cursor.execute('SELECT last_price FROM transactions WHERE ticker_symbol = "{ticker_symbol}";'.format(ticker_symbol=ticker_symbol))
+            #pricex  = cursor.fetchall()
+            #pricel  = [price[0] for price in pricex]
+
+            #cursor.execute('SELECT trade_volume FROM transactions WHERE ticker_symbol = "{ticker_symbol}";'.format(ticker_symbol=ticker_symbol))
+            #volumex = cursor.fetchall()
+            #volumel = [volume[0] for volume in volumex]
+            cursor.close()
+            connection.close()
         return 'Trade is complete'
-            #cursor.execute('SELECT  FROM transactions WHERE ticker_symbol = "{ticker_symbol}";'.format(ticker_symbol=ticker_symbol)) 
-            #volume_weighted_adjusted_price = cursor.fetchall()
-
-            #cursor.execute('UPDATE positions SET number_of_shares = sum(trade_volume FROM transactions WHERE ticker_symbol = {ticker_symbol});'
-            #connection.commit()
-
-            #cursor.execute('UPDATE positions SET volume_weighted_adjusted_price = (sum(last_price * trade_volume) / sum(trade_volume)) FROM volume_weighted_adjusted_price JOIN transactions WHERE 
-#ticker_symbol = {ticker_symbol};'.format(ticker_symbol=ticker_symbol)
-            #connection.commit()
-
-            #cursor.execute('UPDATE positions SET volume_weighted_adjusted_price = volume_weighted_adjusted_price WHERE ticker_symbol = {ticker_symbol});'
-    #cursor.close()
-    #connection.close()
 
 def sell():
     pass
