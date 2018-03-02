@@ -88,7 +88,12 @@ def sell(ticker_symbol, trade_volume):
         return 'You have insufficient funds'
     else:
         cursor.execute('SELECT number_of_shares FROM positions WHERE ticker_symbol = "{ticker_symbol}";'.format(ticker_symbol=ticker_symbol))
-        current_holdings = cursor.fetchall()[0][0]
+        current_holdings = cursor.fetchall()
+
+        if len(current_holdings) < 1:
+            return 'You don\'t have any shares to sell'
+        else:
+            current_holdings = current_holdings[0][0]
 
         new_holdings = current_holdings - int(trade_volume)
 
