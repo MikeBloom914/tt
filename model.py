@@ -141,6 +141,3 @@ def quote(ticker_symbol):
     return last_price
 
 
-if __name__ == '__main__':
-    from pprint import pprint
-    pprint(sell('tsla', 1))
