@@ -7,17 +7,21 @@ import view
 
 
 def game_loop():
-    user_input = view.main_menu()
-    buy_inputs = ['b', 'buy']
-    sell_inputs = ['s', 'sell']
-    lookup_inputs = ['l', 'lookup']
-    quote_inputs = ['q', 'quote']
-    exit_inputs = ['e', 'exit']
+    user_input      = view.main_menu()
+    buy_inputs      = ['b', 'buy']
+    sell_inputs     = ['s', 'sell']
+    lookup_inputs   = ['l', 'lookup']
+    quote_inputs    = ['q', 'quote']
+    exit_inputs     = ['e', 'exit']
+    view_inputs     = ['v', 'view']
+    pl_inputs       = ['p', 'p']
     acceptable_inputs = buy_inputs      \
                         + sell_inputs   \
                         + lookup_inputs \
                         + quote_inputs  \
-                        + exit_inputs # TODO Write logic to quit out of the program
+                        + exit_inputs   \
+                        + view_inputs   \
+                        + pl_inputs
     on_off_switch = True
     while on_off_switch:
         if user_input.lower() in acceptable_inputs:
@@ -41,6 +45,16 @@ def game_loop():
                 x = model.quote(ticker_symbol)
                 return x
 
+            elif user_input.lower() in view_inputs:
+                balance = view.portfolio_menu()
+                x = model.portfolio(balance)
+                return x
+
+            elif user_input.lower() in pl_inputs:
+                p = view.pl_menu()
+                x = model.pl(p)
+                return x
+
             elif user_input.lower() in exit_inputs:
                 break
                 #on_off_switch = False
@@ -49,7 +63,7 @@ def game_loop():
                 time.sleep(5)
                 game_loop()
         else:
-            pass # TODO Write logic to handle bad input
+            return 'Plese Start Over'
 
 
 if __name__ == '__main__':

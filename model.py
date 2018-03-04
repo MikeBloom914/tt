@@ -145,4 +145,57 @@ def quote(ticker_symbol):
     last_price = response['LastPrice']
     return last_price
 
+def portfolio(balance):
+    connection = sqlite3.connect('master.db', check_same_thread=False)
+    cursor     = connection.cursor()
 
+    cursor.execute('SELECT balance FROM users;')
+    balance = cursor.fetchall()[0][0]
+    return 'Current balance is' ,balance
+
+    cursor.close()
+    connection.close()
+
+def pl(p):
+
+    connection = sqlite3.connect('master.db', check_same_thread=False)
+    cursor     = connection.cursor()
+
+    friction = 12
+
+    #cursor.execute('SELECT number_of_shares FROM positions WHERE ticker_symbol = "{ticker_symbol}";'.format(ticker_symbol=ticker_symbol))
+    #current_holdings = cursor.fetchall()[0][0]
+    #new_holdings = int(current_holdings) + int(trade_volume)
+
+    #cursor.execute('UPDATE positions SET number_of_shares = {number_of_shares};'.format(number_of_shares=new_holdings))
+    #connection.commit()
+
+    #cursor.execute('SELECT volume_weighted_adjusted_price FROM positions WHERE ticker_symbol = "{ticker_symbol}";'.format(ticker_symbol=ticker_symbol))
+
+    #old_vwap = cursor.fetchall()[0][0]
+    #new_vwap = ((int(trade_volume) * last_price)+(current_holdings * old_vwap)) / new_holdings 
+
+    cursor.execute('SELECT balance FROM users;')
+    bal= cursor.fetchall()[0][0]
+    
+    cursor.execute('SELECT count(*) from transactions;')
+    vol= cursor.fetchall()[0][0]
+
+    cursor.execute('SELECT number_of_shares FROM positions;')
+    posvol = cursor.fetchall()[0][0]
+    
+    cursor.execute('SELECT volume_weighted_adjusted_price FROM positions JOIN transactions WHERE transaction_type == 0;')
+    sale = cursor.fetchall()[0][0]
+  
+    cursor.execute('SELECT volume_weighted_adjusted_price FROM positions JOIN transactions WHERE transactions.transaction_type == 1;')
+    buy = cursor.fetchall()[0][0]
+        
+    x = ((buy) - (sale)) - (friction * vol)
+    
+    if sale > buy:
+        return 'You made a profit of', x
+    else:
+        return  'You have a loss of', x
+
+    cursor.close()
+    connection.close()
