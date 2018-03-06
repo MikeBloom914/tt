@@ -105,8 +105,6 @@ def sell(ticker_symbol, trade_volume):
 
         if position_exists is None or int(trade_volume) > current_holdings:
             return 'You don\'t have any shares to sell'
-            #cursor.execute('INSERT INTO positions(ticker_symbol, number_of_shares, volume_weighted_adjusted_price) VALUES("{ticker_symbol}", {number_of_shares}, {volume_weighted_adjusted_price});'.format(ticker_symbol=ticker_symbol, number_of_shares=int(trade_volume), volume_weighted_adjusted_price = last_price))
-            #connection.commit()
 
         else:
 
@@ -162,18 +160,6 @@ def pl(p):
     cursor     = connection.cursor()
 
     friction = 12
-
-    #cursor.execute('SELECT number_of_shares FROM positions WHERE ticker_symbol = "{ticker_symbol}";'.format(ticker_symbol=ticker_symbol))
-    #current_holdings = cursor.fetchall()[0][0]
-    #new_holdings = int(current_holdings) + int(trade_volume)
-
-    #cursor.execute('UPDATE positions SET number_of_shares = {number_of_shares};'.format(number_of_shares=new_holdings))
-    #connection.commit()
-
-    #cursor.execute('SELECT volume_weighted_adjusted_price FROM positions WHERE ticker_symbol = "{ticker_symbol}";'.format(ticker_symbol=ticker_symbol))
-
-    #old_vwap = cursor.fetchall()[0][0]
-    #new_vwap = ((int(trade_volume) * last_price)+(current_holdings * old_vwap)) / new_holdings 
 
     cursor.execute('SELECT balance FROM users;')
     bal= cursor.fetchall()[0][0]
