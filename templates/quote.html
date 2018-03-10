@@ -1,0 +1,10 @@
+{% extends "login.html" %}
+{% block main %}
+		<h3> Please enter the ticker symbol you want a price of and hit submit </h3>
+		<form action = "/quote" method = "post"> 
+			<input name = "copsymb" placeholder = "Ticker Symbol" type="text">
+			<input type = "submit">
+		</form>	
+		<p>{{ message }}</p>
+		<p><a href="/menu">Return to Menu</a></p>
+{% endblock main %}

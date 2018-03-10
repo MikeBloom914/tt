@@ -14,7 +14,7 @@ cursor.execute(
     ) VALUES(
         'bloom',
         'swordfish',
-        100000.00
+        10000.00
     );"""
 )
 
