@@ -52,8 +52,8 @@ def buy(ticker_symbol, trade_volume):
             connection.commit()
 
             cursor.execute('SELECT vwap FROM positions WHERE ticker_symbol = "{ticker_symbol}";'.format(ticker_symbol=ticker_symbol))
-
             old_vwap = cursor.fetchall()[0][0]
+            
             new_vwap = ((int(trade_volume) * last_price)+(current_holdings * old_vwap)) / new_holdings 
 
             cursor.execute('UPDATE positions SET vwap = {vwap} WHERE ticker_symbol = "{ticker_symbol}";'.format(vwap=new_vwap, ticker_symbol=ticker_symbol))
@@ -61,7 +61,7 @@ def buy(ticker_symbol, trade_volume):
 
             cursor.close()
             connection.close()
-        return 'Trade is complete'
+        return 'Trade is complete. You paid' , last_price,'on',trade_volume, ticker_symbol.upper()
 
 def sell(ticker_symbol, trade_volume):
 
@@ -96,6 +96,7 @@ def sell(ticker_symbol, trade_volume):
             current_holdings = current_holdings[0][0]
 
         new_holdings = current_holdings - int(trade_volume)
+        #new_holdings and current_holdings are correct
 
         cursor.execute('INSERT INTO transactions(unix_time, ticker_symbol, transaction_type, last_price, trade_volume) VALUES({0}, "{1}", {2}, {3}, {4});'.format(unix_time, ticker_symbol, transaction_type, last_price, int(trade_volume)))
         connection.commit()
@@ -114,11 +115,14 @@ def sell(ticker_symbol, trade_volume):
             cursor.execute('SELECT vwap FROM positions WHERE ticker_symbol = "{ticker_symbol}";'.format(ticker_symbol=ticker_symbol))
             old_vwap = cursor.fetchall()[0][0]
 
+
             if new_holdings == 0:
                 new_vwap = 0.0
             else:
                 new_vwap = ((int(trade_volume) * last_price)+(current_holdings * old_vwap)) / new_holdings
-            
+            print(new_vwap)    
+        #TODO ERROR IS HERE---!!!!
+            #return new_vwap    
             cursor.execute('UPDATE positions SET vwap = {vwap} WHERE ticker_symbol = "{ticker_symbol}";'.format(vwap=new_vwap, ticker_symbol=ticker_symbol))
             connection.commit()
 
@@ -127,6 +131,7 @@ def sell(ticker_symbol, trade_volume):
 
             cursor.close()
             connection.close()
+
         return 'Trade is complete, You sold',trade_volume,'shares of',ticker_symbol.upper(),'at',last_price
 
 def lookup(company_name):
@@ -140,6 +145,7 @@ def quote(ticker_symbol):
     deep_link = 'http://dev.markitondemand.com/MODApis/Api/v2/Quote/json?symbol={ticker_symbol}'.format(ticker_symbol=ticker_symbol)
     response = json.loads(requests.get(deep_link).text)
     last_price = response['LastPrice']
+    
     return ticker_symbol.upper(), last_price
 
 def portfolio():
@@ -166,37 +172,38 @@ def pl1():
 
     friction = 12.00
 
-    cursor.execute('SELECT balance FROM users;')
-    bal = cursor.fetchall()
+    cursor.execute('SELECT SUM(vwap) FROM positions;')
+    avpr = cursor.fetchall()[0][0]
+    
 
-    cursor.execute('SELECT number_of_shares, vwap FROM positions;')
-    pos = cursor.fetchall()
-    #for item in pos:
-    
-    #spent = pos[1] * pos[2]
-    #return spent
-    
-    #cursor.execute('SELECT count(*) from transactions;')
-    #vol= cursor.fetchall()[0][0]
+    cursor.execute('SELECT SUM(last_price) FROM transactions WHERE transaction_type = 0;')
+    prbuy = cursor.fetchall()[0][0]
 
-    #cursor.execute('SELECT number_of_shares FROM positions;')
-    #posvol = cursor.fetchall()[0][0]
+    cursor.execute('SELECT SUM(last_price) FROM transactions WHERE transaction_type = 1;')
+    prsell = cursor.fetchall()[0][0]
     
-    #cursor.execute('SELECT vwap FROM positions JOIN transactions WHERE ticker_symbol = ticker_symbol;'.format(transaction_type=transaction_type))
-    #sale = cursor.fetchall()[0][0]
-  
-    #cursor.execute('SELECT vwap FROM positions JOIN transactions WHERE transaction_type == 1;'.format(transaction_type=transaction_type))
-    #buy = cursor.fetchall()[0][0]
-    
-    #return round(buy, 2), round(sale, 2)
-    #cursor.close()
-    #connection.close()
+    cursor.execute('SELECT SUM(trade_volume) FROM transactions;')
+    totvol = cursor.fetchall()[0][0]
 
-    #x = ((buy) - (sale)) - (friction * vol)
-    
-    #if sale > buy:
-     #   return 'You made a profit of', x
-    #else:
-      #  return  'You have a loss of', x
+    cursor.execute('SELECT count(*) FROM transactions;')
+    trans = cursor.fetchall()[0][0]
+    brocost = trans * friction
+
+    #return cost
+    #return sale
+
+    #return 'Current gain or loss is',(cost - sale) 
+
+    cursor.close()
+    connection.close()
+
+   
+   
+
+    #return 'Current P&L is', round((price * shares), 2)
+
 
     
+
+
+
