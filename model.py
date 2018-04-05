@@ -172,25 +172,13 @@ def pl1():
 
     friction = 12.00
 
-    cursor.execute('SELECT SUM(vwap) FROM positions;')
-    avpr = cursor.fetchall()[0][0]
+
+    cursor.execute('SELECT balance FROM users;')
+    bal= cursor.fetchall()[0][0]
     
-
-    cursor.execute('SELECT SUM(last_price) FROM transactions WHERE transaction_type = 0;')
-    prbuy = cursor.fetchall()[0][0]
-
-    cursor.execute('SELECT SUM(last_price) FROM transactions WHERE transaction_type = 1;')
-    prsell = cursor.fetchall()[0][0]
+    cursor.execute('SELECT count(*) from transactions;')
+    vol= cursor.fetchall()[0][0]
     
-    cursor.execute('SELECT SUM(trade_volume) FROM transactions;')
-    totvol = cursor.fetchall()[0][0]
-
-    cursor.execute('SELECT count(*) FROM transactions;')
-    trans = cursor.fetchall()[0][0]
-    brocost = trans * friction
-
-    #return cost
-    #return sale
 
     #return 'Current gain or loss is',(cost - sale) 
 
