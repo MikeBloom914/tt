@@ -12,9 +12,9 @@ cursor.execute(
         password,
         balance
     ) VALUES(
-        'bloom',
+        'mikebloom914@gmail.com',
         'swordfish',
-        100000.00
+        10000.00
     );"""
 )
 

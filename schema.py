@@ -20,7 +20,7 @@ cursor.execute(
         pk INTEGER PRIMARY KEY AUTOINCREMENT,
         ticker_symbol VARCHAR,
         number_of_shares INTEGER,
-        volume_weighted_adjusted_price FLOAT
+        vwap FLOAT
     );"""
 )
 
