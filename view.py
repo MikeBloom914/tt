@@ -21,7 +21,8 @@ def buy_menu():
     print(header())
     print('\n Terminal Trader\n\n')
     ticker_symbol = input(' Please enter ticker of what you want to buy: ')
-    trade_volume = input(' How many shares of {ticker_symbol} do you want to buy? '.format(ticker_symbol=ticker_symbol))
+    trade_volume = input(' How many shares of {ticker_symbol} do you want to buy? '.format(
+        ticker_symbol=ticker_symbol))
     return ticker_symbol, trade_volume
 
 
@@ -30,8 +31,10 @@ def sell_menu():
     print(header())
     print('\n Terminal Trader\n\n')
     ticker_symbol = input(' Please enter ticker of what you want to sell: ')
-    trade_volume = input(' How many shares of {ticker_symbol} do you want to sell? '.format(ticker_symbol=ticker_symbol))
+    trade_volume = input(' How many shares of {ticker_symbol} do you want to sell? '.format(
+        ticker_symbol=ticker_symbol))
     return ticker_symbol, trade_volume
+
 
 def lookup_menu():
     os.system('clear')
@@ -40,6 +43,7 @@ def lookup_menu():
     company_name = input(' What company do you want to look-up? ')
     return company_name
 
+
 def quote_menu():
     os.system('clear')
     print(header())
@@ -47,12 +51,14 @@ def quote_menu():
     ticker_symbol = input(' What symbol do you want a price for? ')
     return ticker_symbol
 
+
 def portfolio_menu():
     os.system('clear')
     print(header())
     print('\n Terminal Trader\n\n')
     balance = 'Hit enter to reveal your current balance'
     return balance
+
 
 def pl_menu():
     os.system('clear')
