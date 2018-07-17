@@ -6,21 +6,21 @@ import view
 
 
 def game_loop():
-    user_input      = view.main_menu()
-    buy_inputs      = ['b', 'buy']
-    sell_inputs     = ['s', 'sell']
-    lookup_inputs   = ['l', 'lookup']
-    quote_inputs    = ['q', 'quote']
-    exit_inputs     = ['e', 'exit']
-    view_inputs     = ['v', 'view']
-    pl_inputs       = ['p', 'p']
+    user_input = view.main_menu()
+    buy_inputs = ['b', 'buy']
+    sell_inputs = ['s', 'sell']
+    lookup_inputs = ['l', 'lookup']
+    quote_inputs = ['q', 'quote']
+    exit_inputs = ['e', 'exit']
+    view_inputs = ['v', 'view']
+    pl_inputs = ['p', 'p']
     acceptable_inputs = buy_inputs      \
-                        + sell_inputs   \
-                        + lookup_inputs \
-                        + quote_inputs  \
-                        + exit_inputs   \
-                        + view_inputs   \
-                        + pl_inputs
+        + sell_inputs   \
+        + lookup_inputs \
+        + quote_inputs  \
+        + exit_inputs   \
+        + view_inputs   \
+        + pl_inputs
     on_off_switch = True
     while on_off_switch:
         if user_input.lower() in acceptable_inputs:
